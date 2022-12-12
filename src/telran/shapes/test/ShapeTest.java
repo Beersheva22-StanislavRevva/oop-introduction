@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
+import telran.shapes.BaseCipher;
 import telran.shapes.Rectangle;
 import telran.shapes.Square;
 import telran.shapes.SquareLeftTriangle;
@@ -13,6 +14,7 @@ import telran.shapes.SquareTriangle;
 class ShapeTests {
 
 	@Test
+	@Disabled
 	void rectangleTest() {
 		Rectangle rectangle = new Rectangle(10, 5);
 		assertEquals(10, rectangle.getWidth());
@@ -32,5 +34,23 @@ class ShapeTests {
 			System.out.println(str);
 		}
 	}
-
+	
+	@Test
+	void cypherTest() {
+	int length = 10;
+	int number = 10;
+	BaseCipher basecipher = new BaseCipher(length);
+	String key = basecipher.key;
+	String cipher = basecipher.cipher(number, length, key);
+	int decipher = basecipher.decipher(cipher, key);
+	System.out.println(key + "	" + cipher + "	" + decipher);
+	length = 1;
+	number = 1000;
+	BaseCipher basecipher2 = new BaseCipher(length);
+	key = basecipher2.key;
+	cipher = basecipher2.cipher(number, length, key);
+	decipher = basecipher2.decipher(cipher, key);
+	System.out.println(key + "	" + cipher + "	" + decipher);
+	}
+	
 }
