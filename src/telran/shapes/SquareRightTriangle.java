@@ -1,12 +1,9 @@
 package telran.shapes;
 
 public class SquareRightTriangle extends SquareTriangle {
-	
+
 	public SquareRightTriangle(int size) {
-		super(size);
-		 this.isLeftDiagonal = false;
+		super(size, false);
 	}
-	public void setLeftDiagonal(boolean isLeftDiagonal) {
-		 this.isLeftDiagonal = false;
-	}
+
 }

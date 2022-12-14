@@ -2,14 +2,11 @@ package telran.shapes.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import telran.shapes.BaseCipher;
-import telran.shapes.Rectangle;
-import telran.shapes.Square;
-import telran.shapes.SquareLeftTriangle;
-import telran.shapes.SquareRightTriangle;
-import telran.shapes.SquareTriangle;
+import telran.shapes.*;
+
 
 class ShapeTests {
 
@@ -22,20 +19,27 @@ class ShapeTests {
 		displayStrings(rectangle.presentation(20));
 		Rectangle.setSymbol("#");
 		displayStrings(rectangle.presentation(20));
-		Square square = new Square (rectangle.getWidth());
-		displayStrings(square.presentation(20));
-		SquareLeftTriangle squareLeftTriangle = new SquareLeftTriangle(rectangle.getWidth());
-		displayStrings(squareLeftTriangle.presentation(20));
-		SquareRightTriangle squareRightTriangle = new SquareRightTriangle(rectangle.getHeight());
-		displayStrings(squareRightTriangle.presentation(20));
 	}
 	private void displayStrings(String strings[]) {
 		for(String str: strings) {
 			System.out.println(str);
 		}
 	}
+	@Test
+	@Disabled
+	void leftTriangleTest() {
+		SquareLeftTriangle triangle = new SquareLeftTriangle(20);
+		displayStrings(triangle.presentation(10));
+	}
+	@Test
+	@Disabled
+	void rightTriangleTest() {
+		SquareRightTriangle triangle = new SquareRightTriangle(20);
+		displayStrings(triangle.presentation(10));
+	}
 	
 	@Test
+	@Disabled
 	void cypherTest() {
 	int length = 10;
 	int number = 10;
@@ -51,6 +55,17 @@ class ShapeTests {
 	cipher = basecipher2.cipher(number, length, key);
 	decipher = basecipher2.decipher(cipher, key);
 	System.out.println(key + "	" + cipher + "	" + decipher);
+	}
+	@Test
+	void CanvasTest() {
+	Shape[] shapes = {new Rectangle(6,6), new Square(6), new SquareLeftTriangle(7), new SquareRightTriangle(8)};
+	Canvas canvas = new Canvas(5,5,shapes);
+	canvas.setMargin(3);
+	canvas.setDirection("row");
+	canvas.displayStrings(canvas.presentation(10));
+	canvas.setMargin(1);
+	canvas.setDirection("column");
+	canvas.displayStrings(canvas.presentation(5));
 	}
 	
 }

@@ -1,22 +1,19 @@
 package telran.shapes;
 
 public class Square extends Rectangle {
-	
-	protected int size;
-	
+
 	public Square(int size) {
 		super(size, size);
 	}
-	
-	public int getSize() {
-		return size;
-	}
-	
+	@Override
 	public void setWidth(int width) {
-		 this.size = super.width;
+		super.setWidth(width);
+		super.setHeight(width);
 	}
-
+	@Override
 	public void setHeight(int height) {
-		this.size = super.height;
+		setWidth(height);
 	}
+	
+
 }

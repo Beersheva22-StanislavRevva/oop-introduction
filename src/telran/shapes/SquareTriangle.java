@@ -1,52 +1,41 @@
 package telran.shapes;
 
+import java.util.Arrays;
+
 public class SquareTriangle extends Square {
-	protected boolean isLeftDiagonal;
-	protected int size;
-	public SquareTriangle(int size) {
+	private boolean isLeftDiagonal;
+
+	protected SquareTriangle(int size, boolean isLeftDiagonal) {
 		super(size);
-			}
-	public int getSize() {
-		return size;
+		this.isLeftDiagonal = isLeftDiagonal;
 	}
-	public void setSize(int size) {
-		 this.size = super.size;
-	}
+	@Override
 	public String[] presentation(int offset) {
-		String res[] = new String[height];
-		int space = 0;
-		int lastLine = height - 1;
-		if (isLeftDiagonal == false) {
-		res[0] = getOffset(offset) + symbol;
-		res[lastLine] = getLine(offset);
-		for (int i = 1; i < lastLine; i++) {
-			res[i] = this.getRightDiagonal(offset,space+1);
-			space++;
+		int height = getHeight();
+		
+		char[][] presentationBuffer = new char[height - 1][offset + height];
+		fillBuffer(presentationBuffer, offset);
+		return getLines(presentationBuffer, offset);
+		
+	}
+	private String[] getLines(char[][] buffer, int offset) {
+		String[] res = new String[getHeight()];
+		for(int i = 0; i < buffer.length; i++) {
+			res[i] = new String(buffer[i]);
 		}
-		}else {
-			res[0] = getOffset(offset + height - 1) + symbol;
-			res[lastLine] = getLine(offset);
-			for (int i = 1; i < lastLine; i++) {
-				res[i] = this.getLeftDiagonal(offset,space+1);
-				space++;
-			}
-		}
+		res[res.length - 1] = getLine(offset);
 		return res;
 	}
-	private String getRightDiagonal(int offset, int space) {
+	private void fillBuffer(char[][] buffer, int offset) {
+		int edgePos = isLeftDiagonal ? offset : buffer[0].length - 1;
+		char symbol = getSymbol().charAt(0);
+		for (int i = 0; i < buffer.length; i++) {
+			Arrays.fill(buffer[i], ' ');
+			int diagonalPos = isLeftDiagonal ? edgePos + i : edgePos - i;
+			buffer[i][edgePos] = symbol;
+			buffer[i][diagonalPos] = symbol;
+		}
 		
-		return getOffset(offset) + symbol + getOffset(space-1) + symbol;
 	}
-	private String getLeftDiagonal(int offset, int space) {
-			
-		return getOffset(offset + height - space - 1) + symbol + getOffset(space-1) + symbol;
-	}
-	private String getLine(int offset) {
-		
-		return getOffset(offset) + symbol.repeat(height);
-	}
-	private String getOffset(int offset) {
-		
-		return " ".repeat(offset);
-	}
+	
 }
