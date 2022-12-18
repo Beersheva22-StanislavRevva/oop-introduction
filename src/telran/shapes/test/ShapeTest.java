@@ -59,7 +59,11 @@ class ShapeTests {
 	@Test
 	void CanvasTest() {
 	Shape[] shapes = {new Rectangle(6,6), new Square(6), new SquareLeftTriangle(7), new SquareRightTriangle(8)};
-	Canvas canvas = new Canvas(5,5,shapes);
+	Canvas canvas1 = new Canvas(5,5,shapes);
+	canvas1.setMargin(3);
+	canvas1.setDirection("row");
+	Shape[] shapes1 =  {new Rectangle(6,6), new Square(6), new SquareLeftTriangle(7), new SquareRightTriangle(8), canvas1};
+	Canvas canvas = new Canvas(7,7,shapes1);
 	canvas.setMargin(3);
 	canvas.setDirection("row");
 	canvas.displayStrings(canvas.presentation(10));

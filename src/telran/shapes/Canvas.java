@@ -1,7 +1,7 @@
 package telran.shapes;
 
 public class Canvas extends Shape {
-	private Shape[] shapes;
+	protected Shape[] shapes;
 	String direction;
 	int margin;
 	
@@ -26,15 +26,15 @@ public class Canvas extends Shape {
 		return res;
 	}
 	private String[] presentationInRow(int offset) {
-		String[] res = new String[height];
-		singleHeight(shapes);
+		String[] res;
+		singleHeight();
 		res = shapes[0].presentation(offset);
 		for (int i = 1; i < shapes.length; i++) {
 			res = joinArrays(res, shapes[i].presentation(margin));
 		}
 		return res;
 	}
-	private Shape[] singleHeight(Shape[] shapes) {
+	private Shape[] singleHeight() {
 		for (int i = 0; i < shapes.length; i++) {
 			shapes[i].setHeight(height);
 		}
