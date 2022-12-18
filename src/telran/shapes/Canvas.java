@@ -1,97 +1,83 @@
 package telran.shapes;
 
+import java.util.Arrays;
+
 public class Canvas extends Shape {
-	protected Shape[] shapes;
-	String direction;
-	int margin;
-	
+	private Shape[] shapes;
+	private String direction = "row";
+	private int margin = 5;
+
 	public Canvas(int width, int height, Shape[] shapes) {
 		super(width, height);
 		this.shapes = shapes;
 	}
-	public void setDirection(String direction) {
-			this.direction = direction;		
+	@Override
+	public int getHeight() {
+		return direction.equals("row") ? super.getHeight() : (heightsSum() + margin * (shapes.length - 1));
 	}
-	public void setMargin(int margin) {
-			this.margin = margin;
-			}
+
 	@Override
 	public String[] presentation(int offset) {
-		String[] res = new String[height];
-		if (direction == "column") {
-			res =  presentationInColumn(offset);
-		} else {
-			res = presentationInRow(offset);
-		}
-		return res;
+		
+		return direction.equals("row") ? presentationInRow(offset) : presentationInColumn(offset);
 	}
-	private String[] presentationInRow(int offset) {
-		String[] res;
-		singleHeight();
-		res = shapes[0].presentation(offset);
-		for (int i = 1; i < shapes.length; i++) {
-			res = joinArrays(res, shapes[i].presentation(margin));
-		}
-		return res;
-	}
-	private Shape[] singleHeight() {
-		for (int i = 0; i < shapes.length; i++) {
-			shapes[i].setHeight(height);
-		}
-		return shapes;
-	}
-	private String[] joinArrays(String[] array1, String[] array2) {
-		String result[] = new String[array1.length];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = array1[i] + array2[i];
-		}
-		return result;
-	}
+
 	private String[] presentationInColumn(int offset) {
-		shapes = singleWidth(shapes);
-		int height = shapes[0].height;
-		height = calculateHeight(height);
-		String[] res = new String[height];
-		String[] tmp = new String[shapes[0].height];
-		int tmpHeight = 0;
-		for (int i = 0; i < shapes.length; i++) {
-		tmp = shapes[i].presentation(offset);
-			for (int j = 0; j < shapes[i].height; j++) {
-				res[j + tmpHeight] = tmp[j];
-			}
-			tmpHeight = tmpHeight + shapes[i].height;
-			int j=0;
-			while(j < margin && i < (shapes.length - 1)){
-				res[j + tmpHeight] = spaces (offset, width);
-				j++;
-			}
-			tmpHeight = tmpHeight + margin;
-			
+		String res[] = new String[heightsSum() + (shapes.length - 1) * margin];
+		Arrays.fill(res, " ".repeat(getWidth()));
+		int length = mergeLines(0, res, getPresentation(0, offset));
+		for(int i = 1; i < shapes.length; i++) {
+			length = mergeLines(length + margin, res, getPresentation(i, offset));
 		}
 		return res;
 	}
-	private int calculateHeight(int height) {
-		for (int i=1; i<shapes.length; i++) {
-			height = height + shapes[i].height + margin;	
+
+	private int heightsSum() {
+		int sum = 0;
+		for(Shape shape: shapes) {
+			sum += shape.getHeight();
 		}
-		return height;
+		return sum;
 	}
-	private String spaces(int offset, int width) {
-		int tmp = offset + width;
-		return " ".repeat(tmp);
+
+	private int mergeLines(int length, String[] res, String[] shapePresentation) {
+		System.arraycopy(shapePresentation, 0, res, length, shapePresentation.length);
+		return length + shapePresentation.length;
 	}
-	private Shape[] singleWidth(Shape[] shapes) {
-		for (int i = 0; i < shapes.length; i++) {
-			shapes[i].setWidth(width);
+
+	private String[] presentationInRow(int offset) {
+		String[] res = getPresentation(0, offset);
+		for(int i = 1; i < shapes.length; i++) {
+			res = join(res, getPresentation(i, margin));
 		}
-		return shapes;
+		return res;
 	}
-	public void displayStrings(String[] strings) {
-		for(int i = 0; i < strings.length; i++) {
-				System.out.println(strings[i]);
+
+	private String[] join(String[] res, String[] cur) {
+		String [] joinRes = new String[res.length];
+		for(int i = 0; i < joinRes.length; i++) {
+			joinRes[i] = res[i] + cur[i];
 		}
-			
+		return joinRes;
 	}
+
+	private String[] getPresentation(int shapeIndex, int offset) {
+		if (direction.equals("row")) {
+			shapes[shapeIndex].setHeight(getHeight());
+		} else {
+			shapes[shapeIndex].setWidth(getWidth());
+		}
+		return shapes[shapeIndex].presentation(offset);
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+
+	public void setMargin(int margin) {
+		this.margin = margin;
+	}
+
 	
 
 }
