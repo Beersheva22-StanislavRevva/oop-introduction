@@ -63,10 +63,16 @@ public class Canvas extends Shape {
 
 	private String[] getPresentation(int shapeIndex, int offset) {
 		if (direction.equals("row")) {
+			if (shapes[shapeIndex] instanceof Canvas) {
+				((Canvas)shapes[shapeIndex]).setDirection("row");
+			}
 			shapes[shapeIndex].setHeight(getHeight());
 		} else {
+			if (shapes[shapeIndex] instanceof Canvas) {
+				((Canvas)shapes[shapeIndex]).setDirection("row");
+			}
 			shapes[shapeIndex].setWidth(getWidth());
-		}
+			}
 		return shapes[shapeIndex].presentation(offset);
 	}
 

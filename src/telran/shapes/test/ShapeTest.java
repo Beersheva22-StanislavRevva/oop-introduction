@@ -45,7 +45,7 @@ class ShapeTests {
 	}
 
 	@Test
-	//@Disabled
+	@Disabled
 	void canvasInRowTest() {
 		Canvas canvas = new Canvas(10, 4, shapes);
 		canvas.setMargin(3);
@@ -54,11 +54,11 @@ class ShapeTests {
 	}
 
 	@Test
-	 @Disabled
+	 //@Disabled
 	void canvasInColumnTest() {
 		Canvas canvas = new Canvas(10, 4, shapes);
 		canvas.setDirection("column");
-		this.canvas.setDirection("column");
+		//this.canvas.setDirection("column");
 		canvas.setMargin(1);
 		displayStrings(canvas.presentation(2));
 
