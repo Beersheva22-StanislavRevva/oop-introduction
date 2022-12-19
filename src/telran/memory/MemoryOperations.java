@@ -6,7 +6,7 @@ public static int getMaxAvaibleMemory() {
 	boolean running = true;
 	byte ar[] = null;
 	int left = 0;
-	int right = res - 1;
+	int right = res;
 	int middle = res/2;
 	while(running) {
 		ar = null;
@@ -20,11 +20,10 @@ public static int getMaxAvaibleMemory() {
 			} catch (Throwable e) {
 				right = middle - 1;
 			}
-		long tmp = ((long) left + (long) right) / 2;
-		middle = (int) tmp;
+		middle = left + (right-left)/2;
 	}
-	return (int) (left - 1) ;
-	
+	res = left - 1;
+	return res;	
 }
 
 }
