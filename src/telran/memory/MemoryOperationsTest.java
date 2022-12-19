@@ -19,9 +19,7 @@ byte ar[];
 		}catch(Throwable e) {
 			flException = true;
 		}
-		System.out.print(MemoryOperations.getMaxAvaibleMemory());
-		System.out.print(" ");
-		System.out.print(Integer.MAX_VALUE);
+		System.out.print(MemoryOperations.getMaxAvaibleMemory() + "	" + Integer.MAX_VALUE);
 		assertTrue(flException);
 		
 	}
