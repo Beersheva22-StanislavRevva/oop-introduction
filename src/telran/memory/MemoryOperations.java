@@ -9,6 +9,7 @@ public static int getMaxAvaibleMemory() {
 	int right = res - 1;
 	int middle = res/2;
 	while(running) {
+		ar = null;
 		try {
 			ar = new byte[middle];
 			left = middle + 1;
@@ -19,9 +20,10 @@ public static int getMaxAvaibleMemory() {
 			} catch (Throwable e) {
 				right = middle - 1;
 			}
-		middle = (left + right) / 2;
+		long tmp = ((long) left + (long) right) / 2;
+		middle = (int) tmp;
 	}
-	return left;
+	return (int) (left - 1) ;
 	
 }
 
