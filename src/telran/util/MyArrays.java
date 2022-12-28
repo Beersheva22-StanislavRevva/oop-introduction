@@ -1,7 +1,5 @@
 package telran.util;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -49,9 +47,9 @@ public static <T> int binarySearch(T[] arraySorted, T key, Comparator<T> comp) {
 }
 
 public static<T> T[] filter(T[] array, Predicate<T> predicate) {
-	int countPredicate = getCountPredicate(array, predicate);
 	
-	T[] res = Arrays.copyOf(array, countPredicate);
+	
+	T[] res = Arrays.copyOf(array, array.length);
 	int index = 0;
 	for(T element: array) {
 		if(predicate.test(element)) {
@@ -59,52 +57,50 @@ public static<T> T[] filter(T[] array, Predicate<T> predicate) {
 		}
 	}
 	
+	return Arrays.copyOf(res, index);
+}
+
+
+public static <T> T[] removeIf(T[] array, Predicate<T> predicate) {
+	
+	return filter(array, predicate.negate());
+}
+public static <T> T[] removeRepeated(T[] array) {
+	final Object helper[] = new Object[array.length];
+	final int index[] = {0};
+	return removeIf(array, element -> {
+		boolean res = true;
+		if (!contains(helper, element)) {
+			helper[index[0]++] = element;
+			res = false;
+		}
+		return res;
+	});
+}
+public static <T> boolean contains(T[] array, T pattern) {
+	int index = 0;
+	while(index < array.length && !isEqual(array[index], pattern)) {
+		index++;
+	}
+	
+	return index < array.length;
+}
+static private boolean isEqual(Object element, Object pattern) {
+	return element == null ? element == pattern : element.equals(pattern);
+}
+public static <T> String join(T[] array, String delimiter) {
+	String res = "";
+	if (array.length > 0) {
+		StringBuilder builder = new StringBuilder(array[0].toString());
+		for (int i = 1; i < array.length; i++) {
+			builder.append(delimiter).append(array[i]);
+		}
+		res = builder.toString();
+	}
 	return res;
 }
 
-private static <T> int getCountPredicate(T[] array, Predicate<T> predicate) {
-	int res = 0;
-	
-	for(T element: array) {
-		if(predicate.test(element)) {
-			res++;
-		}
-	}
-	return res;
-}
-public static <T> T[] removeIf(T[] array, Predicate<T> predicate) {
-		T[] res = filter(array, predicate.negate());
-	return res;
-}
-public static <T> T[] removeRepeated(T[] array) {
-	T[] res = Arrays.copyOf(array, array.length);
-	int i = 0;
-	for (i = 1; i < array.length; i++) {
-		res[i] = null;
-	}
-	int j = 1;
-	i = 1;
-	for (i = 1; i < array.length; i++) {
-		T tmp = array[i];
-		Predicate<T> pred = s -> s == tmp;
-		if (contains(res, pred) == false) {
-			res[j] = array[i];
-			j++;
-		}
-		else {
-			res = Arrays.copyOf(res, res.length-1);
-		}
-	}
-	return res;
-	}
-public static <T> boolean contains(T[] array, Predicate<T> pattern) {
-	boolean res = true;
-	T[] resArray = filter(array, pattern);
-	if (resArray.length == 0) {
-	res = false;
-	}
-	return res;
-}
+
 
 
 
