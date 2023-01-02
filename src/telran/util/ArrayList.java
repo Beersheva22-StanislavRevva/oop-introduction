@@ -26,6 +26,9 @@ public ArrayList() {
 		array = Arrays.copyOf(array, array.length * 2);
 	}
 
+	
+// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1; нужно добавить условие, что если индекса нет,  
+// то возвращается -1; проще сделать метод на основе метода indexOf.
 	@Override
 	public boolean remove(T pattern) {
 		int i = 0;
@@ -39,6 +42,7 @@ public ArrayList() {
 		return true;
 	}
 
+// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1; проще сделать метод на основе метода remove  
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
 		for (int i = 0; i < array.length; i++){
@@ -49,7 +53,8 @@ public ArrayList() {
 	}
 		return true;
 	}
-	
+
+// ошибки: можно было добавить условие в return для упрощения кода
 	@Override
 	public boolean isEmpty() {
 		if(size() == 0) {
@@ -65,6 +70,8 @@ public ArrayList() {
 		return size;
 	}
 
+// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1;проще было написать метод с использование метода  indexOf;
+// нужно добавить условие, что если элемента с таким индексом нет, то возвращается -1;	
 	@Override
 	public boolean contains(T pattern) {
 		int index = 0;
@@ -73,10 +80,13 @@ public ArrayList() {
 		}
 		return index < array.length;
 	}
+	
+	
 	static private boolean isEqual(Object element, Object pattern) {
 		return element == null ? element == pattern : element.equals(pattern);
 	}	
-
+	
+// ошибки: нужно заполнить массив ar null'ами от индекса size до последнего элемента с помощью метода Arrays.fill
 	@Override
 	public T[] toArray(T[] ar) {
 		if (ar.length >= size()) {
@@ -87,6 +97,9 @@ public ArrayList() {
 		return ar;
 	}
 
+// Ошибки: не нужно увеличивать размер массива, если индекс больше максимального индекса массива; нужно увеличить size на 1,
+// не нужно использовать size как метод, достаточно использовать переменную size 
+	
 	@Override
 	public void add(int index, T element) {
 		if (index >array.length) {
@@ -99,6 +112,8 @@ public ArrayList() {
 		array[index] = element;
 	}
 
+// Ошибки: нужно проверить, есть ли индекс в массиве, нужно уменьшить size на 1;
+// не нужно использовать size как метод, достаточно использовать переменную size
 	@Override
 	public T remove(int index) {
 		T res = array[index];
@@ -107,6 +122,7 @@ public ArrayList() {
 		return res;
 	}
 
+// Ошибок нет
 	@Override
 	public int indexOf(T pattern) {
 		int index = 0;
@@ -119,6 +135,7 @@ public ArrayList() {
 		return index;
 	}
 
+// нужно проходить массив в цикле из конца в начало, чтобы, если искомый паттерн находится в последнем элементе, он не потерялся
 	@Override
 	public int lastIndexOf(T pattern) {
 		int index = -1;
@@ -129,12 +146,13 @@ public ArrayList() {
 			}
 		return index;
 	}
-
+// Нужно проверить, есть ли индекс в массиве
 	@Override
 	public T get(int index) {
 		return array[index];
 	}
 
+// Нужно проверить, есть ли индекс в массиве 
 	@Override
 	public void set(int index, T element) {
 		array[index] = element;
