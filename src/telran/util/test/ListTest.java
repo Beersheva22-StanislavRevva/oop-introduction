@@ -93,7 +93,6 @@ public abstract class ListTest extends CollectionTest {
 	@Test
 	@Override
 	void testIterator() {
-	Integer numbers[] = {10, 100, -5, 134, 280, 120, 15};
 	int i = 0;
 	Iterator<Integer> it = list.iterator();
 	while(it.hasNext()) {
