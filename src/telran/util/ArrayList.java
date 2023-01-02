@@ -1,13 +1,27 @@
 package telran.util;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.function.Predicate;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class ArrayList<T> implements List<T> {
 	static final int DEFAULT_CAPACITY = 16;
-public T [] array;
+private T [] array;
 private int size;
+private class ArrayListIterator implements Iterator<T> {
+int current = 0;
+	@Override
+	public boolean hasNext() {
+		return current < size;
+	}
+
+	@Override
+	public T next() {
+		return array[current++];
+	}
+	
+}
+@SuppressWarnings("unchecked")
 public ArrayList(int capacity) {
 	array = (T[])new Object[capacity];
 }
@@ -26,42 +40,34 @@ public ArrayList() {
 		array = Arrays.copyOf(array, array.length * 2);
 	}
 
-	
-// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1; нужно добавить условие, что если индекса нет,  
-// то возвращается -1; проще сделать метод на основе метода indexOf.
 	@Override
 	public boolean remove(T pattern) {
-		int i = 0;
-		while (i < (array.length - 1) && array[i] != pattern) {
-			i++;
-			}
-		if (array[i].equals(pattern)) {
-		System.arraycopy(array, i + 1, array, i, size() - (i + 1));
-		array = Arrays.copyOf(array, array.length-1);
-		}	else  throw new ArithmeticException("pattern is not present");	
-		return true;
+		boolean res = false;
+		int index = indexOf(pattern);
+		if (index > -1) {
+			res = true;
+			remove(index);
+		}
+		return res;
 	}
 
-// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1; проще сделать метод на основе метода remove  
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
-		for (int i = 0; i < array.length; i++){
-			if(predicate.test(array[i]) == true) {
-				System.arraycopy(array, (i + 1), array, i, array.length - (i + 1));
-				array = Arrays.copyOf(array, array.length-1);
+		//FIXME - write implementation of O[N]. Hint working with only indexes
+		int oldSize = size;
+		for (int i = size - 1; i >= 0; i--) {
+			if (predicate.test(array[i])) {
+				remove(i);
 			}
-	}
-		return true;
+		}
+		return oldSize > size;
+		
 	}
 
-// ошибки: можно было добавить условие в return для упрощения кода
 	@Override
 	public boolean isEmpty() {
-		if(size() == 0) {
-			return true;
-		}else {
-			return false;
-		}
+		
+		return size == 0;
 	}
 
 	@Override
@@ -70,92 +76,89 @@ public ArrayList() {
 		return size;
 	}
 
-// ошибки: не нужно проходить весь массив, достаточно только до индекса со значением size-1;проще было написать метод с использование метода  indexOf;
-// нужно добавить условие, что если элемента с таким индексом нет, то возвращается -1;	
 	@Override
 	public boolean contains(T pattern) {
-		int index = 0;
-		while(index < array.length && !isEqual(array[index], pattern)) {
-			index++;
-		}
-		return index < array.length;
+		
+		return indexOf(pattern) > -1;
 	}
-	
-	
-	static private boolean isEqual(Object element, Object pattern) {
-		return element == null ? element == pattern : element.equals(pattern);
-	}	
-	
-// ошибки: нужно заполнить массив ar null'ами от индекса size до последнего элемента с помощью метода Arrays.fill
+
 	@Override
 	public T[] toArray(T[] ar) {
-		if (ar.length >= size()) {
-			System.arraycopy(array, 0, ar, 0, size());	
-		}else { ar = Arrays.copyOf(ar, size());
-				System.arraycopy(array, 0, ar, 0, size());
-			}
+		if(ar.length < size) {
+			ar = Arrays.copyOf(array, size);
+		}
+		System.arraycopy(array, 0, ar, 0, size);
+		Arrays.fill(ar, size, ar.length, null);
 		return ar;
 	}
 
-// Ошибки: не нужно увеличивать размер массива, если индекс больше максимального индекса массива; нужно увеличить size на 1,
-// не нужно использовать size как метод, достаточно использовать переменную size 
-	
 	@Override
 	public void add(int index, T element) {
-		if (index >array.length) {
+		checkIndex(index, true);
+		if (size == array.length) {
 			reallocate();
 		}
-		if(size == array.length) {
-			reallocate();
-		}
-		System.arraycopy(array, index, array, index + 1, size() - index);
+		System.arraycopy(array, index, array, index + 1, size - index);
 		array[index] = element;
+		size++;
+
 	}
 
-// Ошибки: нужно проверить, есть ли индекс в массиве, нужно уменьшить size на 1;
-// не нужно использовать size как метод, достаточно использовать переменную size
 	@Override
 	public T remove(int index) {
+		checkIndex(index, false);
 		T res = array[index];
-		System.arraycopy(array, index + 1, array, index, size() - (index + 1));
-		array = Arrays.copyOf(array, array.length-1);
+		size--;
+		System.arraycopy(array, index + 1, array, index, size - index);
+		array[size] = null;
 		return res;
 	}
 
-// Ошибок нет
 	@Override
 	public int indexOf(T pattern) {
 		int index = 0;
-		if (contains(pattern)) {
-			while(index < size && !isEqual(array[index], pattern)) {
-				index++;
-			}
-		} else {index = -1;
-			}
+		while(index < size && !isEqual(array[index], pattern)) {
+			index++;
+		}
+		return index < size ? index : -1;
+	}
+
+	private boolean isEqual(T element, T pattern) {
+		
+		return element == null  ? element == pattern : element.equals(pattern);
+	}
+	@Override
+	public int lastIndexOf(T pattern) {
+		int index = size - 1;
+		while(index >= 0 && !isEqual(array[index], pattern)) {
+			index--;
+		}
 		return index;
 	}
 
-// нужно проходить массив в цикле из конца в начало, чтобы, если искомый паттерн находится в последнем элементе, он не потерялся
-	@Override
-	public int lastIndexOf(T pattern) {
-		int index = -1;
-			for (int i = 0; i < size(); i++) {
-				if (isEqual(array[i], pattern)) {
-					index = i;
-				}
-			}
-		return index;
-	}
-// Нужно проверить, есть ли индекс в массиве
 	@Override
 	public T get(int index) {
+		checkIndex(index, false);
 		return array[index];
 	}
 
-// Нужно проверить, есть ли индекс в массиве 
+	private void checkIndex(int index, boolean sizeIncluded) {
+		int sizeDelta = sizeIncluded ? 0 : 1;
+		if (index < 0 || index > size - sizeDelta) {
+			throw new IndexOutOfBoundsException(index);
+		}
+		
+	}
 	@Override
 	public void set(int index, T element) {
+		checkIndex(index, false);
 		array[index] = element;
+
+	}
+	@Override
+	public Iterator<T> iterator() {
+		
+		return new ArrayListIterator();
 	}
 
 }

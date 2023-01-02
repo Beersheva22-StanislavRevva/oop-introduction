@@ -6,12 +6,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import telran.util.ArrayList;
 import telran.util.MyArrays;
 
 class MyArraysTest {
@@ -35,7 +33,7 @@ class MyArraysTest {
 		
 	}
 	@Test
-	@Disabled
+	
 	void evenOddTest() {
 		
 		Integer expected[] = {-8, 2, 10, 100, 47, 47, 13, 13, 7, 7, -7, -7};
@@ -43,7 +41,6 @@ class MyArraysTest {
 		assertArrayEquals(expected, numbers);
 	}
 	@Test
-	@Disabled
 	void binarySearchTest() {
 		String strings[] = {
 			"ab", "abm", "abmb", "abmbc"	
@@ -57,7 +54,6 @@ class MyArraysTest {
 		assertEquals(-5, MyArrays.binarySearch(strings, "lmn", comp));
 	}
 	@Test
-	@Disabled
 	void filterTest() {
 		int dividor = 2;
 		String subStr = "m";
@@ -80,13 +76,11 @@ class MyArraysTest {
 		return res;
 	}
 	@Test
-	@Disabled
 	void removeIfTest() {
 		Integer expected[] = {2, -8, 100, 10};
 		assertArrayEquals(expected, MyArrays.removeIf(numbers, n -> n % 2 != 0));
 	}
 	@Test
-	@Disabled
 	void removeRepeated() {
 		Integer expected[] = {13, 2, -8, 47, 100, 10, -7, 7};
 		assertArrayEquals(expected, MyArrays.removeRepeated(numbers));
@@ -97,13 +91,11 @@ class MyArraysTest {
 		assertArrayEquals(expected2, MyArrays.removeRepeated(numbersRepeatedValues));
 	}
 	@Test
-	@Disabled
 	void joinFunctionalTest() {
 		String expected = "13,2,-8,47,100,10,-7,7,13,47,7,-7";
 		assertEquals(expected, MyArrays.join(numbers, ","));
 	}
 	@Test
-	@Disabled
 	void joinPerformanceTest() {
 		Integer largeArray[] = getLargeNumbersArray();
 		for (int i = 0; i < N_RUNS; i++) {
@@ -115,124 +107,5 @@ class MyArraysTest {
 		Arrays.fill(res, 1000);
 		return res;
 	}
-	@Test
-	void removeTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		list.remove("a");
-		String [] expected = {"b","c"};
-		assertArrayEquals(expected,list.array);
-		}
-	
-	@Test
-	void removeIfMatchTest() {
-		ArrayList<String> list = new ArrayList<String>(7);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		list.add("a");
-		list.add("d");
-		list.add("a");
-		list.add("a");
-		String [] expected = {"b","c","d"};
-		Predicate<String> predStr = s -> "a".equals(s);
-		list.removeIf(predStr);
-	}
-	
-	@Test
-	void isEmptyTest() {
-		ArrayList<String> list = new ArrayList<String>();
-		assertTrue(list.isEmpty());
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		assertFalse(list.isEmpty());
-		}
-	
-	@Test
-	void containsTest() {
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		assertTrue(list.contains("a"));
-		assertFalse(list.contains("d"));
-		}
-	
-	@Test
-	void toArrayTest() {
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		String [] ar = new String [1];
-		String [] expected = {"a","b","c"};
-		assertArrayEquals(expected,list.toArray(ar));
-	}
-	
-	@Test
-	void addAtIndexTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		list.add(2, "d");
-		String [] expected = {"a","b","d","c",null,null};
-		assertArrayEquals(expected,list.array);
-	}
-	
-	@Test
-	void removeAtIndexTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		assertEquals("b",list.remove(1));
-		String [] expected = {"a","c"};
-		assertArrayEquals(expected,list.array);
-	}
-	
-	@Test
-	void indexOfTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		assertEquals(2,list.indexOf("c"));
-		assertEquals(-1,list.indexOf("d"));
-	}
-	
-	@Test
-	void lastIndexOf() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("a");
-		list.add("a");
-		assertEquals(2,list.lastIndexOf("a"));
-		assertEquals(-1,list.indexOf("d"));
-	}
-	
-	@Test
-	void getTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		assertEquals("b",list.get(1));
-	}
-	
-	@Test
-	void setTest() {
-		ArrayList<String> list = new ArrayList<String>(3);
-		list.add("a");
-		list.add("b");
-		list.add("c");
-		list.set(2, "a");
-		assertEquals("a",list.get(2));
-	}
-	
-	
 
 }
