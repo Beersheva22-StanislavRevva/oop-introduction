@@ -142,7 +142,7 @@ public ArrayList() {
 		return array[index];
 	}
 
-	private void checkIndex(int index, boolean sizeIncluded) {
+	public void checkIndex(int index, boolean sizeIncluded) {
 		int sizeDelta = sizeIncluded ? 0 : 1;
 		if (index < 0 || index > size - sizeDelta) {
 			throw new IndexOutOfBoundsException(index);
