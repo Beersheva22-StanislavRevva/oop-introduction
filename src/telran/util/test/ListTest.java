@@ -99,5 +99,30 @@ public abstract class ListTest extends CollectionTest {
 		assertArrayEquals(numbers, actual);
 		assertThrowsExactly(NoSuchElementException.class, () -> it.next());
 	}
+	@Test
+	void isLoopTest() {
+		LinkedList<Object> linkedList = new LinkedList<>();
+		linkedList = fillLinkedList();
+		assertFalse (linkedList.hasLoop());
+		linkedList.setNext(4, 0);
+		assertTrue (linkedList.hasLoop());
+		linkedList = fillLinkedList();
+		assertFalse (linkedList.hasLoop());
+		linkedList.setNext(1, 0);
+		assertTrue (linkedList.hasLoop());
+		linkedList = fillLinkedList();
+		assertFalse (linkedList.hasLoop());
+		linkedList.setNext(4, 2);
+		assertTrue (linkedList.hasLoop());
+	}
+
+	private LinkedList<Object> fillLinkedList() {
+		LinkedList<Object> linkedList = new LinkedList<>();
+		for(int i = 0; i < numbers.length; i++) {
+			linkedList.add(numbers[i]);
+		}
+		return linkedList;
+		
+	}
 
 }
