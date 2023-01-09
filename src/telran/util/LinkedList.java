@@ -23,7 +23,7 @@ public class LinkedList<T> implements List<T> {
 	Node<T> current = head;
 		@Override
 		public boolean hasNext() {
-			return current != null ? true : false;
+			return current != null;
 			}
 
 		@Override
@@ -68,14 +68,57 @@ public class LinkedList<T> implements List<T> {
 	@Override
 	public boolean removeIf(Predicate<T> predicate) {
 		int oldSize = size;
-		Node<T> current = tail;
-		for (int i = size - 1; i >= 0; i--) {
+		Node<T> current = head;
+		while (current != null) {
 			if (predicate.test(current.obj)) {
-				remove(i);
+				removeNode(current);
 			}
-			current = current.prev;
+			current = current.next;
 		}
 		return oldSize > size;
+	}
+
+	private void removeNode(Node<T> current) {
+		if (current == head) {
+			removeHead();
+		} else if (current == tail) {
+			removeTail();
+		} else {
+			removeMiddle(current);
+		}
+		size--;
+		
+	}
+
+
+
+	private void removeMiddle(Node<T> current) {
+		Node<T> prev = current.prev;
+		Node<T> next = current.next;
+		prev.next = next;
+		next.prev = prev;
+		
+	}
+
+
+
+	private void removeTail() {
+		Node<T> prev = tail.prev;
+		prev.next = null;
+		tail = prev;
+		
+	}
+
+
+
+	private void removeHead() {
+		if (head.next == null) {
+			head = tail = null;
+		} else {
+			Node<T> next = head.next;
+			next.prev = null;
+			head = next;
+		}
 		
 	}
 
@@ -170,37 +213,42 @@ public class LinkedList<T> implements List<T> {
 		checkIndex(index, true);
 		T res;
 		if (index == size - 1) {
-			res = removeTail();
+			res = removeTail2();
 		} else if(index == 0) {
-			res = removeHead();
+			res = removeHead2();
 		} else {
-			res = removeMiddle(index);
+			res = removeMiddle2(index);
 		}
+		size--;
 		return res;
 	}
 
-	private T removeMiddle(int index) {
+	private T removeMiddle2(int index) {
 		Node<T> nodeIndex = getNode(index);
 		T res = nodeIndex.obj;
 		Node<T> nodePrev = nodeIndex.prev;
 		Node<T> nodeNext = nodeIndex.next;
 		nodePrev.next = nodeNext;
 		nodeNext.prev = nodePrev;
-		size--;
 		return res;
 	}
 
-	private T removeHead() {
-		T res = head.obj;
-		head = head.next;
-		size--;
-		return res;
+	private T removeHead2() {
+		T res = null;
+		if (head.next == null) {
+			head = tail = null;
+		} else {
+			res = head.obj;
+			head = head.next;
+			}
+			return res;
 	}
 
-	private T removeTail() {
+	private T removeTail2() {
+		Node<T> prev = tail.prev;
 		T res = tail.obj;
-		tail = tail.prev;
-		size--;
+		prev.next = null;
+		tail = prev;
 		return res;
 	}
 
