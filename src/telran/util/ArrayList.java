@@ -11,7 +11,8 @@ public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 
 	private class ArrayListIterator implements Iterator<T> {
 		int current = 0;
-		boolean flNext = false;
+		 boolean flNext;
+
 		@Override
 		public boolean hasNext() {
 
@@ -23,17 +24,15 @@ public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-			flNext = true;
+			flNext  = true;
 			return array[current++];
 		}
 		@Override
 		public void remove() {
-			if(!flNext) {
-			throw new IllegalStateException();
+			if (!flNext) {
+				throw new IllegalStateException();
 			}
-			System.arraycopy(array, current, array, current - 1, size - current);
-			array[size-1] = null;
-			size--;
+			ArrayList.this.remove(--current);
 			flNext = false;
 		}
 
@@ -76,6 +75,12 @@ public class ArrayList<T> extends AbstractCollection<T> implements List<T> {
 		return oldSize > size;
 
 	}
+
+	
+
+	
+
+	
 
 	@Override
 	public void add(int index, T element) {

@@ -17,11 +17,9 @@ default boolean removeIf(Predicate<T> predicate) {
 	}
 	return oldSize > size();
 }
-
 boolean isEmpty();
 int size();
 boolean contains(T pattern);
-T get(int index);
 
 /*******************************/
 /**
@@ -33,16 +31,17 @@ T get(int index);
  * if ar refers to memory that is greater than required for all elements of Collection then all elements of the 
  * Collection will be put in the array and rest of memory will be filled by null's 
  */
+ 
 default T[] toArray(T[] ar) {
 	int size = size();
 	if (ar.length < size) {
 		ar = Arrays.copyOf(ar, size);
 	}
-	for(int i = 0; i < size; i++) {
-		ar[i] = get(i);
+	int index = 0;
+	for(T obj: this) {
+		ar[index++] = obj;
 	}
 	Arrays.fill(ar, size, ar.length, null);
 	return ar;
 }
-
 }

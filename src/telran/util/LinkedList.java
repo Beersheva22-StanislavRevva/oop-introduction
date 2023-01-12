@@ -16,8 +16,8 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		}
 	}
 
-	private Node<T> head;
-	private Node<T> tail;
+	Node<T> head;
+	Node<T> tail;
 
 
 	private class LinkedListIterator implements Iterator<T> {
@@ -70,14 +70,23 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 //	
 
-	private void removeNode(Node<T> current) {
-		if (current == head) {
-			removeHead();
-		} else if (current == tail) {
-			removeTail();
+	void removeNode(Node<T> node) {
+		Node<T> next = node.next;
+		Node<T> prev = node.prev;
+		if (prev == null) {
+			head = next;
 		} else {
-			removeMiddle(current);
+			prev.next = next;
+			node.prev = null;
 		}
+
+		if (next == null) {
+			tail = prev;
+		} else {
+			next.prev = prev;
+			node.next = null;
+		}
+		node.obj = null;
 		size--;
 		
 	}
@@ -116,7 +125,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 
 
 	
-	
+
 	@Override
 	public Iterator<T> iterator() {
 		
@@ -156,22 +165,17 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 			throw new IllegalArgumentException();
 		}
 		getNode(index1).next = getNode(index2);
-		getNode(index2).prev = getNode(index1);
-		
-		
 	}
 	public boolean hasLoop() {
-		boolean res = false;
-		int index = 0;
-		while (getNode(index).next != tail) {
-			if (getNode(index+1) != getNode(index).next) {
-				res = true;
-			}
-			index++;
+		
+		Node<T> runner = head;
+		Node<T> fastRunner = head;
+		boolean res = runner == fastRunner && runner != head;
+		while (fastRunner != null && fastRunner.next != null && !res) {
+			runner = runner.next;
+			fastRunner = fastRunner.next.next;
+			res = runner == fastRunner;
 		}
-			if (tail.next != null) {
-				res = true;
-			}
 		return res;
 	}
 	/*********************************************************************************************/
@@ -210,11 +214,13 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 	public T remove(int index) {
 		checkIndex(index, false);
 		Node<T> removedNode = getNode(index);
+		
 		if (removedNode == null) {
 			throw new IllegalStateException("removedNode in method remove is null");
 		}
+		T res = removedNode.obj;
 		removeNode(removedNode);
-		return removedNode.obj;
+		return res;
 	}
 
 	@Override
@@ -253,5 +259,7 @@ public class LinkedList<T> extends AbstractCollection<T> implements List<T> {
 		
 
 	}
+	
+	
 
 }

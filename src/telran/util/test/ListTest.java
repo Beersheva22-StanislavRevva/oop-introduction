@@ -104,11 +104,11 @@ public abstract class ListTest extends CollectionTest {
 		LinkedList<Object> linkedList = new LinkedList<>();
 		linkedList = fillLinkedList();
 		assertFalse (linkedList.hasLoop());
-		linkedList.setNext(4, 0);
+		linkedList.setNext(6, 0);
 		assertTrue (linkedList.hasLoop());
 		linkedList = fillLinkedList();
 		assertFalse (linkedList.hasLoop());
-		linkedList.setNext(1, 0);
+		linkedList.setNext(0, 0);
 		assertTrue (linkedList.hasLoop());
 		linkedList = fillLinkedList();
 		assertFalse (linkedList.hasLoop());
