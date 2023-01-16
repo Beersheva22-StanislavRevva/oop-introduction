@@ -15,68 +15,59 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 	private float factor;
 	private class HashSetIterator implements Iterator<T> {
 		 boolean flNext = false;
-		 int index = 0;
-		 int indexOfSize = 0;
-		 LinkedList<T> list = (LinkedList<T>) hashTable[0];
-		 Node<T> current;
+		 int current = 0;
+		 int index1 = -1;
+		 Iterator<T> listIterator = getCurrentIterator();
+		
 		 
 		@Override
 		public boolean hasNext() {
 
-			return indexOfSize < size;
+			return current < size;
 		}
 
+		private Iterator<T> getCurrentIterator() {
+	         do {
+	            index1++;
+	         } while (index1 < hashTable.length && hashTable[index1] == null);
+	         
+	         if (index1 < hashTable.length) {
+	        	 return hashTable[index1].iterator();
+	         } else { return null;
+	        	 
+	         }
+	               
+	         	           
+	    }
+		  
 		@Override
 		public T next() {
-			T res;
 			if (!hasNext()) {
-				throw new NoSuchElementException();
+                throw new NoSuchElementException();
+            }
+			if (!listIterator.hasNext()) {
+			listIterator = getCurrentIterator();
 			}
-			while (list == null) {
-				index++;
-				list = (LinkedList<T>) hashTable[index];
-				current = list.head;
-			}
-				if (current.next != null) {
-					res = current.obj;
-					current = current.next;
-					indexOfSize++;
-					flNext = true;
-				} else {
-					res = current.obj;
-					indexOfSize++;	
-					index++;
-					list = (LinkedList<T>) hashTable[index];
-					current = list.head;
-				}
-				
-				return res;
+			flNext = true;
+			current ++;
+			
+			return listIterator.next();
+			
 			}
 		
 		@Override
 		public void remove() {
-			
 			if(!flNext) {
 				throw new IllegalStateException();
 			}
-			
-			if (current.prev != null) {
-			Node<T> removedNode = current;
-			current = current.prev;
-			list.removeNode(removedNode);
-			flNext = false;
-			indexOfSize--;
+			listIterator.remove();
+			if (hashTable[index1].isEmpty()) {
+				hashTable[index1] = null;
 			}
-			else {
-				list.removeNode(current);
-				
-				while (list.isEmpty() && index != 0) {
-					index--;
-					list = (LinkedList<T>) hashTable[index];
-					current = list.tail;
-					
-				}
-			}
+			flNext = false; 
+			current--;
+	        size--;
+	        			
 		}
 	}
 	
