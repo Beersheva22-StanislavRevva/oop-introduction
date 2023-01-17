@@ -4,74 +4,71 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import telran.util.LinkedList.Node;
-
-//import telran.util.LinkedList.Node;
-
 public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 	private static final int DEFAULT_TABLE_SIZE = 16;
 	private static final float DEFAULT_FACTOR = 0.75f;
 	private List<T> [] hashTable;
 	private float factor;
 	private class HashSetIterator implements Iterator<T> {
-		 boolean flNext = false;
-		 int current = 0;
-		 int index1 = -1;
-		 Iterator<T> listIterator = getCurrentIterator();
-		
-		 
-		@Override
-		public boolean hasNext() {
+		Iterator<T> currentIterator;
+		Iterator<T> prevIterator;
+		int indexIterator = 0;
+		boolean flNext = false;
+		HashSetIterator() {
 
-			return current < size;
+			getCurrentIterator();
 		}
+			@Override
+			public boolean hasNext() {
+				return currentIterator != null;
+			}
 
-		private Iterator<T> getCurrentIterator() {
-	         do {
-	            index1++;
-	         } while (index1 < hashTable.length && hashTable[index1] == null);
-	         
-	         if (index1 < hashTable.length) {
-	        	 return hashTable[index1].iterator();
-	         } else { return null;
-	        	 
-	         }
-	               
-	         	           
-	    }
-		  
-		@Override
-		public T next() {
-			if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-			if (!listIterator.hasNext()) {
-			listIterator = getCurrentIterator();
+			@Override
+			public T next() {
+				if (!hasNext()) {
+					throw new NoSuchElementException();
+				}
+				T res = currentIterator.next();
+				prevIterator = currentIterator;
+				getCurrentIterator();
+				flNext = true;
+				return res;
 			}
-			flNext = true;
-			current ++;
-			
-			return listIterator.next();
-			
+			private void getCurrentIterator() {
+				if (currentIterator == null || !currentIterator.hasNext()) {
+					Iterator<T> it = null;
+					while(it == null || !it.hasNext()) {
+						List<T> list = getList();
+						indexIterator++;
+						if (list == null) {
+							currentIterator = null;
+							return;
+						}
+						it = list.iterator();
+					}
+					currentIterator = it;
+				}
 			}
-		
-		@Override
-		public void remove() {
-			if(!flNext) {
-				throw new IllegalStateException();
+
+			private List<T> getList() {
+				while(indexIterator < hashTable.length &&
+						hashTable[indexIterator] == null) {
+					indexIterator++;
+				}
+				return indexIterator < hashTable.length ?
+						hashTable[indexIterator] : null;
 			}
-			listIterator.remove();
-			if (hashTable[index1].isEmpty()) {
-				hashTable[index1] = null;
+
+			@Override
+			public void remove() {
+				if(!flNext) {
+					throw new IllegalStateException();
+				}
+				prevIterator.remove();
+				flNext = false;
+				size--;
 			}
-			flNext = false; 
-			current--;
-	        size--;
-	        			
-		}
 	}
-	
-
 	@SuppressWarnings("unchecked")
 	public HashSet(int tableSize, float factor) {
 		if(tableSize < 1) {
@@ -155,28 +152,12 @@ public class HashSet<T> extends AbstractCollection<T> implements Set<T> {
 		return res;
 	}
 
-@Override
+	@Override
 	public Iterator<T> iterator() {
 		
 		return new HashSetIterator();
 	}
-	//FIXME The following method is only for initial test
-	//after HashTableIterator implementation is done the method should be removed
-	@Override
-	public T[] toArray(T[] ar) {
-		if (ar.length < size) {
-			ar = Arrays.copyOf(ar, size);
-		}
-		int index = 0;
-		for (List<T> list: hashTable) {
-			if (list != null) {
-				for(T obj: list) {
-					ar[index++] = obj;
-				}
-			}
-		}
-		Arrays.fill(ar, size, ar.length, null);
-		return ar;
-	}
+	
+	
 
 }

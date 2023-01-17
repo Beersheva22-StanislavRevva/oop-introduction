@@ -12,8 +12,8 @@ import telran.util.*;
 
 public class HashSetTest extends SetTest {
 	Random random = new Random();
-	private static final int N_RUNS = 3;
-	private static final int N_NUMBERS = 3;
+	private static final int N_RUNS = 10;
+	private static final int N_NUMBERS = 100000;
 
 	@BeforeEach
 	@Override 
@@ -30,13 +30,14 @@ public class HashSetTest extends SetTest {
 		fillSet(set, new Integer[] {0, 16, 32, 48, 512, 128});
 		set.removeIf(allPredicate);
 		assertTrue(set.isEmpty());
-for (int i = 0; i < N_RUNS; i++) {
+		for (int i = 0; i < N_RUNS; i++) {
 			Integer[] bigArray = getRandomArray();
 			fillSet(set, bigArray);
 			set.removeIf(allPredicate);
 			assertTrue(set.isEmpty());
 			
-		}	
+		}
+		
 	}
 
 	private Integer[] getRandomArray() {
