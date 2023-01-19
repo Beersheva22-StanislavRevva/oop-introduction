@@ -122,7 +122,7 @@ public TreeSet() {
 			return null;
 		}
 		
-		while (current != null) {
+		while (current != null ) {
 			int compRes = comp.compare(element, current.obj);
 			if (compRes == 0) {
 			return current.obj;
@@ -131,6 +131,7 @@ public TreeSet() {
 				parent = current;
 				current = current.right;
 			} else {
+				if (compRes < 0)
 				parent = current;
 				current = current.left;
 			}

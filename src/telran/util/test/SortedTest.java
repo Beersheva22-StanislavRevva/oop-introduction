@@ -40,7 +40,7 @@ public class SortedTest extends SetTest{
 		assertNull(sorted.floor(-10));
 		assertEquals((Integer)15, sorted.floor(20));
 		assertEquals((Integer)280, sorted.floor(300));
-		//assertEquals((Integer)100, sorted.floor(115));
+		assertEquals((Integer)100, sorted.floor(115));
 	}
 	@Test
 	void ceilingTest() {
