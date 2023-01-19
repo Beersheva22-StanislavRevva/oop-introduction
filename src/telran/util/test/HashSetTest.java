@@ -25,6 +25,7 @@ public class HashSetTest extends SetTest {
 	@Override
 	@Test
 	void testIterator() {
+		
 		Predicate<Integer> allPredicate = n -> true;
 		HashSet<Integer> set = new HashSet<>();
 		fillSet(set, new Integer[] {0, 16, 32, 48, 512, 128});
