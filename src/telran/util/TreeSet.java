@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import telran.util.LinkedList.Node;
+
 public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
    static private class Node<T> {
 	   T obj;
@@ -36,8 +38,21 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 		current = getNextCurrent(current);
 		return res;
 	}
-	   
+	
+	@Override
+	public void remove() {
+//		if(!hasNext()) {
+//			throw new IllegalStateException();
+//		}
+		if (current != null) {
+			T res = current.obj;
+			Node<T> prev = getPrevCurrent(current);
+			TreeSet.this.remove(prev.obj);
+			current = getNode(current.obj);
+		} else TreeSet.this.remove(last());
+				
    }
+}
    private Node<T> root;
    private Comparator<T> comp;
    public TreeSet(Comparator<T> comp) {
@@ -47,8 +62,20 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 	
 	return current.right == null ? getGreaterParent(current) : getLeastNode(current.right);
 }
+   
 private Node<T> getGreaterParent(Node<T> current) {
 	while(current.parent != null && current.parent.left != current) {
+		current = current.parent;
+	}
+	return current.parent;
+}
+
+private Node<T> getPrevCurrent(Node<T> current) {
+	return current.left == null ? getLowerParent(current) : getGreatestNode(current.left);
+	}
+
+private Node<T> getLowerParent(Node<T> current) {
+	while(current.parent != null && current.parent.right != current) {
 		current = current.parent;
 	}
 	return current.parent;
@@ -99,10 +126,90 @@ public TreeSet() {
 	}
 	@Override
 	public boolean remove(T pattern) {
-		// Not implemented yet
-		return false;
+		boolean res = true;
+		if (!contains(pattern)) {
+			return res = false;
+		}
+		Node<T> node = getNode(pattern);
+		Node<T> left = node.left;
+		Node<T> right = node.right;
+		Node<T> parent = node.parent;
+		size--;
+		if (left == null && right == null) {
+		removeNoChildren(node, parent);	
+		return res;
+		}
+		if (left == null && right != null) {
+		removeNoLeft(node, parent, right);
+		return res;
+		}
+		if (left != null && right == null) {
+		removeNoRight(node, parent, left);
+		return res;
+		} else {
+			removeBothChildren(node, parent, left, right);
+		return res;
+		}
 	}
 
+	
+	private void removeNoChildren(Node<T> node, Node<T> parent) {
+		if (parent != null) {
+			if (comp.compare(node.obj, parent.obj) < 0) {
+				parent.left = null;
+			} else {parent.right = null;
+				}
+			node.parent = null;
+		} else {
+			node.parent = null;
+			node = root = null;
+		}
+	}
+	
+	private void removeNoLeft(Node<T> node, Node<T> parent, Node<T> right) {
+		if (parent != null) {
+			if (comp.compare(node.obj, parent.obj) < 0) {
+				parent.left = right;
+			} else { 
+				parent.right = right;
+				}
+		} 
+		right.parent = parent;
+	}
+	
+	private void removeNoRight(Node<T> node, Node<T> parent, Node<T> left) {
+		if (parent != null) {
+			if (comp.compare(node.obj, parent.obj) < 0) {
+				parent.left = left;
+			} else {parent.right = left;
+				}
+		}
+		left.parent = parent;
+		
+	}
+	
+	private void removeBothChildren(Node<T> node, Node<T> parent, Node<T> left, Node<T> right) {
+		Node<T> newNode = getNextCurrent(node);
+		remove(newNode.obj);
+		if (parent != null) {
+			if (comp.compare(newNode.obj, parent.obj) < 0) {
+				parent.left = newNode;
+			} else {parent.right = newNode;
+				}
+		} else {root = newNode;
+				newNode.parent = null;
+			}
+		if (left != null && comp.compare(newNode.obj, left.obj) != 0) {
+			left.parent = newNode;
+			newNode.left = left;
+		} else newNode.left = null;
+		if (right != null && comp.compare(newNode.obj, right.obj) != 0) {
+			right.parent = newNode;
+			newNode.right = right;
+		} else newNode.right = null;
+		size++;
+	}
+	
 	@Override
 	public boolean contains(T pattern) {
 		Node<T> node = getNode(pattern);
@@ -122,7 +229,7 @@ public TreeSet() {
 			return null;
 		}
 		
-		while (current != null ) {
+		while (current != null) {
 			int compRes = comp.compare(element, current.obj);
 			if (compRes == 0) {
 			return current.obj;
@@ -132,14 +239,24 @@ public TreeSet() {
 				current = current.right;
 			} else {
 				if (compRes < 0)
+					if (comp.compare(element, current.left.obj) < 0) {
+						return parent.obj;
+					}
+				
 				parent = current;
 				current = current.left;
 			}
 		}
 			
-		return comp.compare(element, parent.obj) > 0 ? parent.obj : parent.parent.obj;
+		return comp.compare(element, parent.obj) > 0 ? parent.obj : findLowerParent(parent,element);
 	}
 		
+	private T findLowerParent(Node<T> parent, T element) {
+		while (comp.compare(element, parent.obj) < 0) {
+			parent = parent.parent;
+		}
+		return parent.obj;
+	}
 	@Override
 	public T ceiling(T element) {
 		Node<T> current = root;
@@ -162,8 +279,16 @@ public TreeSet() {
 			}
 		}
 			
-		return comp.compare(element, parent.obj) < 0 ? parent.obj : parent.parent.obj;
+		return comp.compare(element, parent.obj) < 0 ? parent.obj : findHigherParent(parent,element);
 	}
+	
+	private T findHigherParent(Node<T> parent, T element) {
+		while (comp.compare(element, parent.obj) > 0) {
+			parent = parent.parent;
+		}
+		return parent.obj;
+	}
+	
 	@Override
 	public T first() {
 		return root != null ? getLeastNode(root).obj : null;
