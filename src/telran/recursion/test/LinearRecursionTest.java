@@ -27,7 +27,15 @@ void powerTest() {
 	assertThrowsExactly(IllegalArgumentException.class, ()->power(1000, -1));
 	assertEquals(1000, power(10, 3));
 	assertEquals(-1000, power(-10, 3));
+	assertEquals(10000, power(-10, 4));
 }
+
+@Test
+void squareTest() {
+	assertEquals(4, square(0 , 2));
+	assertEquals(100, square(0 , -10));
+	}
+
 @Test
 void sumTest() {
 	int ar[] = {1, 2, 3, 4, 5, 6};
@@ -41,9 +49,15 @@ void reverseTest() {
 	int ar1[] = {1, 2, 3, 4, 5, 6, 7};
 	int expected1[] = {7, 6, 5, 4, 3, 2, 1};
 	reverse(ar);
-	reverse(ar1);
+	reverse (ar1);
 	assertArrayEquals(expected, ar);
 	assertArrayEquals(expected1, ar1);
-	
+}
+
+@Test
+void isSubstringTest() {
+	assertTrue(isSubstring("testtesttest","test"));
+	assertTrue(isSubstring("test","test"));
+	assertFalse(isSubstring("test","tst"));
 }
 }
