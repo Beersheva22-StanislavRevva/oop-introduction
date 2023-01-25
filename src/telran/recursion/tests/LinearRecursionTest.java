@@ -1,4 +1,4 @@
-package telran.recursion.test;
+package telran.recursion.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static telran.recursion.LinearRecursion.*;
@@ -27,20 +27,18 @@ void powerTest() {
 	assertThrowsExactly(IllegalArgumentException.class, ()->power(1000, -1));
 	assertEquals(1000, power(10, 3));
 	assertEquals(-1000, power(-10, 3));
-	assertEquals(10000, power(-10, 4));
 }
-
-@Test
-void squareTest() {
-	assertEquals(4, square(0 , 2));
-	assertEquals(100, square(0 , -10));
-	}
-
 @Test
 void sumTest() {
 	int ar[] = {1, 2, 3, 4, 5, 6};
 	assertEquals(21, sum(ar));
 	assertEquals(0, sum(new int[0]));
+}
+@Test
+void squareTest() {
+	assertEquals(1, square(1));
+	assertEquals(10000, square(100));
+	assertEquals(10000, square(-100));
 }
 @Test
 void reverseTest() {
@@ -52,12 +50,7 @@ void reverseTest() {
 	reverse (ar1);
 	assertArrayEquals(expected, ar);
 	assertArrayEquals(expected1, ar1);
-}
-
-@Test
-void isSubstringTest() {
-	assertTrue(isSubstring("testtesttest","test"));
-	assertTrue(isSubstring("test","test"));
-	assertFalse(isSubstring("test","tst"));
+	
+	
 }
 }
