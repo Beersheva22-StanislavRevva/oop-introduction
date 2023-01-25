@@ -3,8 +3,7 @@ package telran.util;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import telran.util.LinkedList.Node;
+import java.util.function.BooleanSupplier;
 
 public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
    static private class Node<T> {
@@ -18,6 +17,8 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
    }
    private class TreeSetIterator implements Iterator<T> {
 	   Node<T> current = root;
+	   Node<T> prev;
+	   boolean flRemove = false;
 	   TreeSetIterator() {
 		   if (current != null) {
 			   current = getLeastNode(current);
@@ -34,25 +35,27 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 		if (!hasNext()) {
 			throw new NoSuchElementException();
 		}
+		flRemove = true;
 		T res = current.obj;
+		prev = current;
 		current = getNextCurrent(current);
 		return res;
 	}
-	
 	@Override
 	public void remove() {
-//		if(!hasNext()) {
-//			throw new IllegalStateException();
-//		}
-		if (current != null) {
-			T res = current.obj;
-			Node<T> prev = getPrevCurrent(current);
-			TreeSet.this.remove(prev.obj);
-			current = getNode(current.obj);
-		} else TreeSet.this.remove(last());
-				
+		if(!flRemove)  {
+			throw new IllegalStateException();
+		}
+		flRemove = false;
+		if(isJunction(prev)) {
+			current = prev;
+		}
+		removeNode(prev);
+	}
+	   
    }
-}
+private static final String SYMBOL = " ";
+private static final int NUMBER_SYMBOLS_PER_LEVEL = 3;
    private Node<T> root;
    private Comparator<T> comp;
    public TreeSet(Comparator<T> comp) {
@@ -62,20 +65,8 @@ public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
 	
 	return current.right == null ? getGreaterParent(current) : getLeastNode(current.right);
 }
-   
 private Node<T> getGreaterParent(Node<T> current) {
 	while(current.parent != null && current.parent.left != current) {
-		current = current.parent;
-	}
-	return current.parent;
-}
-
-private Node<T> getPrevCurrent(Node<T> current) {
-	return current.left == null ? getLowerParent(current) : getGreatestNode(current.left);
-	}
-
-private Node<T> getLowerParent(Node<T> current) {
-	while(current.parent != null && current.parent.right != current) {
 		current = current.parent;
 	}
 	return current.parent;
@@ -83,6 +74,12 @@ private Node<T> getLowerParent(Node<T> current) {
 private Node<T> getLeastNode(Node<T> current) {
 	while(current.left != null) {
 		current = current.left;
+	}
+	return current;
+}
+private Node<T> getMostNode(Node<T> current) {
+	while(current.right != null) {
+		current = current.right;
 	}
 	return current;
 }
@@ -126,90 +123,50 @@ public TreeSet() {
 	}
 	@Override
 	public boolean remove(T pattern) {
-		boolean res = true;
-		if (!contains(pattern)) {
-			return res = false;
+		boolean res = false;
+		Node<T> removedNode = getNode(pattern);
+		if (removedNode != null && comp.compare(pattern, removedNode.obj) == 0) {
+			res = true;
+			removeNode(removedNode);
 		}
-		Node<T> node = getNode(pattern);
-		Node<T> left = node.left;
-		Node<T> right = node.right;
-		Node<T> parent = node.parent;
-		size--;
-		if (left == null && right == null) {
-		removeNoChildren(node, parent);	
 		return res;
-		}
-		if (left == null && right != null) {
-		removeNoLeft(node, parent, right);
-		return res;
-		}
-		if (left != null && right == null) {
-		removeNoRight(node, parent, left);
-		return res;
-		} else {
-			removeBothChildren(node, parent, left, right);
-		return res;
-		}
 	}
 
-	
-	private void removeNoChildren(Node<T> node, Node<T> parent) {
-		if (parent != null) {
-			if (comp.compare(node.obj, parent.obj) < 0) {
-				parent.left = null;
-			} else {parent.right = null;
-				}
-			node.parent = null;
+	private void removeNode(Node<T> node) {
+		if(isJunction(node)) {
+			removeNodeJunction(node);
 		} else {
-			node.parent = null;
-			node = root = null;
+			removeNodeNonJunction(node);
 		}
-	}
-	
-	private void removeNoLeft(Node<T> node, Node<T> parent, Node<T> right) {
-		if (parent != null) {
-			if (comp.compare(node.obj, parent.obj) < 0) {
-				parent.left = right;
-			} else { 
-				parent.right = right;
-				}
-		} 
-		right.parent = parent;
-	}
-	
-	private void removeNoRight(Node<T> node, Node<T> parent, Node<T> left) {
-		if (parent != null) {
-			if (comp.compare(node.obj, parent.obj) < 0) {
-				parent.left = left;
-			} else {parent.right = left;
-				}
-		}
-		left.parent = parent;
+		size--;
 		
 	}
-	
-	private void removeBothChildren(Node<T> node, Node<T> parent, Node<T> left, Node<T> right) {
-		Node<T> newNode = getNextCurrent(node);
-		remove(newNode.obj);
-		if (parent != null) {
-			if (comp.compare(newNode.obj, parent.obj) < 0) {
-				parent.left = newNode;
-			} else {parent.right = newNode;
-				}
-		} else {root = newNode;
-				newNode.parent = null;
-			}
-		if (left != null && comp.compare(newNode.obj, left.obj) != 0) {
-			left.parent = newNode;
-			newNode.left = left;
-		} else newNode.left = null;
-		if (right != null && comp.compare(newNode.obj, right.obj) != 0) {
-			right.parent = newNode;
-			newNode.right = right;
-		} else newNode.right = null;
-		size++;
+	private boolean isJunction(Node<T> node) {
+		return node.left != null && node.right != null;
 	}
-	
+	private void removeNodeNonJunction(Node<T> node) {
+		Node<T> parent = node.parent;
+		Node<T> child = node.left == null ? node.right : node.left;
+		if (parent == null) {
+			root = child;
+		} else {
+			if (parent.left == node) {
+				parent.left = child;
+			} else {
+				parent.right = child;
+			}
+		}
+		if (child != null) {
+			child.parent = parent;
+		}
+		
+	}
+	private void removeNodeJunction(Node<T> node) {
+		Node<T> substitution = getLeastNode(node.right);
+		node.obj = substitution.obj;
+		removeNodeNonJunction(substitution);
+		
+	}
 	@Override
 	public boolean contains(T pattern) {
 		Node<T> node = getNode(pattern);
@@ -223,85 +180,126 @@ public TreeSet() {
 	}
 	@Override
 	public T floor(T element) {
-		Node<T> current = root;
-		Node<T> parent = null;
-		if (comp.compare(element, first()) < 0) {
-			return null;
-		}
 		
-		while (current != null) {
-			int compRes = comp.compare(element, current.obj);
-			if (compRes == 0) {
-			return current.obj;
-			}
-			if (compRes > 0) {
-				parent = current;
-				current = current.right;
-			} else {
-				if (compRes < 0)
-					if (comp.compare(element, current.left.obj) < 0) {
-						return parent.obj;
-					}
-				
-				parent = current;
-				current = current.left;
-			}
-		}
-			
-		return comp.compare(element, parent.obj) > 0 ? parent.obj : findLowerParent(parent,element);
-	}
-		
-	private T findLowerParent(Node<T> parent, T element) {
-		while (comp.compare(element, parent.obj) < 0) {
-			parent = parent.parent;
-		}
-		return parent.obj;
+		return floorCeiling(element, true);
 	}
 	@Override
 	public T ceiling(T element) {
-		Node<T> current = root;
-		Node<T> parent = null;
-		if (comp.compare(element, last()) > 0) {
-			return null;
-		}
 		
-		while (current != null) {
-			int compRes = comp.compare(element, current.obj);
-			if (compRes == 0) {
-			return current.obj;
-			}
-			if (compRes < 0) {
-				parent = current;
-				current = current.left;
-			} else {
-				parent = current;
-				current = current.right;
-			}
-		}
-			
-		return comp.compare(element, parent.obj) < 0 ? parent.obj : findHigherParent(parent,element);
+		return floorCeiling(element, false);
 	}
-	
-	private T findHigherParent(Node<T> parent, T element) {
-		while (comp.compare(element, parent.obj) > 0) {
-			parent = parent.parent;
-		}
-		return parent.obj;
-	}
-	
 	@Override
 	public T first() {
-		return root != null ? getLeastNode(root).obj : null;
+		T res = null;
+		if (root != null) {
+			res = getLeastNode(root).obj;
+		}
+		return res;
 	}
 	@Override
 	public T last() {
-		return root != null ? getGreatestNode(root).obj : null;
-	}
-	private Node<T> getGreatestNode(Node<T> current) {
-		while(current.right != null) {
-			current = current.right;
+		T res = null;
+		if (root != null) {
+			res = getMostNode(root).obj;
 		}
-		return current;
+		return res;
+	}
+	private T floorCeiling(T pattern, boolean isFloor) {
+		T res = null;
+		int compRes = 0;
+		Node<T> current = root;
+		while (current != null && (compRes = comp.compare(pattern, current.obj)) != 0) {
+			if ((compRes < 0 && !isFloor) || (compRes > 0 && isFloor) ) {
+				res = current.obj;
+			} 
+			current = compRes < 0 ? current.left : current.right;
+		}
+		return current == null ? res : current.obj;
+		
+	}
+	public void displayTreeRotated() {
+		displayTreeRotated(root, 0);
+	}
+	private void displayTreeRotated(Node<T> root, int level) {
+		if (root != null) {
+			displayTreeRotated(root.right, level + 1);
+			displayRoot(root, level);
+			displayTreeRotated(root.left, level + 1);
+		}
+		
+	}
+	private void displayRoot(Node<T> root, int level) {
+		System.out.printf("%s%s\n", SYMBOL.repeat(NUMBER_SYMBOLS_PER_LEVEL * level), root.obj);
+		
+	}
+	public int height() {
+		
+		return height(root);
+	}
+	private int height(Node<T> root) {
+		int res = 0;
+		if (root != null) {
+			int heightLeft = height(root.left);
+			int heightRight = height(root.right);
+			res = Math.max(heightLeft, heightRight) + 1;
+		}
+		return res;
+		
+	}
+	public int width() {
+		
+		return width (root);
+	}
+	
+	private int width(Node<T> root) {
+ 		int res = 0;
+		if (root != null) {
+			int widthLeft = width(root.left);
+			int widthRight = width(root.right);
+			if (root.left != null || root.right != null) {
+			res = widthLeft + widthRight;
+			} else {
+				res = widthLeft + widthRight + 1;
+			}
+		}
+		return res;
+	}
+	public void inversion() {
+		inversion(root);
+	}
+	private void inversion(Node<T> root) {
+		if (root != null) {
+			inversion(root.right);
+			inversion(root.left);
+			swapChildren(root);
+		}
+		
+	}
+	private void swapChildren(Node<T> root) {
+		Node<T> tmp = null;
+		if (root.right != null || root.left != null) {
+		tmp = root.left;
+		root.left = root.right;
+		root.right = tmp;
+		}
+	 	
+	}
+	public boolean containsInverted(T pattern) {
+			Node<T> node = getInvertedNode(pattern);
+			return node != null && comp.compare(pattern, node.obj) == 0;
+		
+	}
+	private Node<T> getInvertedNode(T element) {
+		{
+			Node<T> current = root;
+			Node<T> parent = null;
+			int compRes;
+			while(current != null && (compRes = comp.compare(element, current.obj)) != 0) {
+				parent = current;
+				current = compRes < 0 ? current.right : current.left;
+			}
+			return current == null ? parent : current;
+		}
 	}
 
 }
