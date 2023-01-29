@@ -2,6 +2,7 @@ package telran.util.test;
 
 import org.junit.jupiter.api.BeforeEach;
 
+import telran.util.Sorted;
 import telran.util.StandardTreeSet;
 
 public class StandardTreeSetTest extends SortedTest {
@@ -10,5 +11,11 @@ public class StandardTreeSetTest extends SortedTest {
 void setUp() throws Exception {
 	collection = new StandardTreeSet<Integer>();
 	super.setUp();
+}
+
+@Override
+protected Sorted<Integer> getSortedCollection() {
+	
+	return new  StandardTreeSet<Integer>();
 }
 }

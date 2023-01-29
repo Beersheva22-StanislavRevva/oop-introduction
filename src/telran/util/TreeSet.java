@@ -3,7 +3,6 @@ package telran.util;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.function.BooleanSupplier;
 
 public class TreeSet<T> extends AbstractCollection<T> implements Sorted<T> {
    static private class Node<T> {
@@ -248,58 +247,70 @@ public TreeSet() {
 	}
 	public int width() {
 		
-		return width (root);
+		return width(root);
 	}
-	
 	private int width(Node<T> root) {
- 		int res = 0;
+		int res = 0;
 		if (root != null) {
-			int widthLeft = width(root.left);
-			int widthRight = width(root.right);
-			if (root.left != null || root.right != null) {
-			res = widthLeft + widthRight;
+			if (root.left == null && root.right == null) {
+				res = 1;
 			} else {
-				res = widthLeft + widthRight + 1;
+				res = width(root.left) + width(root.right);
 			}
+				
 		}
+		
 		return res;
 	}
 	public void inversion() {
 		inversion(root);
+		comp = comp.reversed();
+		
 	}
 	private void inversion(Node<T> root) {
 		if (root != null) {
-			inversion(root.right);
 			inversion(root.left);
-			swapChildren(root);
+			inversion(root.right);
+			swap(root);
 		}
 		
 	}
-	private void swapChildren(Node<T> root) {
-		Node<T> tmp = null;
-		if (root.right != null || root.left != null) {
-		tmp = root.left;
+	private void swap(Node<T> root) {
+		Node<T> tmp = root.left;
 		root.left = root.right;
 		root.right = tmp;
-		}
-	 	
-	}
-	public boolean containsInverted(T pattern) {
-			Node<T> node = getInvertedNode(pattern);
-			return node != null && comp.compare(pattern, node.obj) == 0;
 		
 	}
-	private Node<T> getInvertedNode(T element) {
-		{
-			Node<T> current = root;
-			Node<T> parent = null;
-			int compRes;
-			while(current != null && (compRes = comp.compare(element, current.obj)) != 0) {
-				parent = current;
-				current = compRes < 0 ? current.right : current.left;
-			}
-			return current == null ? parent : current;
-		}
+	public void balance() {
+		Node<T>[] array = getNodesArray();
+		root = balance(array, 0, array.length - 1, null);
+		
 	}
+	private Node<T> balance(Node<T>[] array, int left, int right, Node<T>parent) {
+		Node<T> root = null;
+		if (left <= right) {
+			final int rootIndex = (left + right) / 2;
+			root = array[rootIndex];
+			root.parent = parent;
+			root.left = balance(array, left, rootIndex - 1, root);
+			root.right = balance(array, rootIndex + 1, right, root);
+		}
+		return root;
+	}
+	@SuppressWarnings("unchecked")
+	private Node<T>[] getNodesArray() {
+		Node<T> res[] = new Node[size];
+		int index = 0;
+		if (root != null) {
+			Node<T> current = getLeastNode(root);
+			while (current != null) {
+				res[index++] = current;
+				current = getNextCurrent(current);
+			} 
+		}
+		return res;
+	}
+	
+	
 
 }
