@@ -1,7 +1,14 @@
 package telran.util;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public interface Collection<T> extends Iterable<T>{
 boolean add (T element);
@@ -44,4 +51,18 @@ default T[] toArray(T[] ar) {
 	Arrays.fill(ar, size, ar.length, null);
 	return ar;
 }
+default Stream<T> stream() {
+	return StreamSupport.stream(this.spliterator(), false);
+}
+default Stream<T> parallelStream() {
+	return StreamSupport.stream(this.spliterator(), true);
+}
+
+default T[] toArrayShuffling(T[] array) {
+	List<T> list = this.stream().sorted((o1, o2) -> ThreadLocalRandom.
+			current().nextInt(-1, 2)).
+			collect(Collectors.toList());
+	array = list.toArray(array);
+	return array;
+	}
 }
