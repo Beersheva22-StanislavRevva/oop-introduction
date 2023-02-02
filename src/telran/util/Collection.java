@@ -59,10 +59,9 @@ default Stream<T> parallelStream() {
 }
 
 default T[] toArrayShuffling(T[] array) {
-	array = (this.stream().
+	return array = (this.stream().
 			sorted((o1, o2) -> ThreadLocalRandom.current().nextInt(-1, 2)).
 			collect(Collectors.toList()).
 			toArray(array));
-	return array;
 	}
 }
