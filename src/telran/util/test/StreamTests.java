@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import telran.util.ArrayList;
@@ -44,24 +43,8 @@ public class StreamTests {
 				.collect(Collectors.joining(", ")));
 	}
 	@Test
-	@Disabled
 	void sportLotoTest() {
 		new Random().ints(1, 50).distinct().limit(7)
 		.forEach(n -> System.out.print(n +"; "));
-	}
-	
-	@Test
-	void toArrayTest() {
-		Integer[] array = {};
-		for (int i = 0; i < 3; i++) {
-		printArrayShuffled(array);
-		}
-				
-	}
-	private void printArrayShuffled(Integer[] array) {
-		for (Integer element : list.toArrayShuffling(array)) {
-			System.out.print(element + "	");
-		}
-		System.out.println();
 	}
 }

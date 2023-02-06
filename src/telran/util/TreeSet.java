@@ -310,6 +310,15 @@ public TreeSet() {
 		}
 		return res;
 	}
+	@Override
+	public T get(T pattern) {
+		T res = null;
+		Node<T> node = getNode(pattern);
+		if (node != null && node.obj.equals(pattern)) {
+			res = node.obj;
+		}
+		return res;
+	}
 	
 	
 
