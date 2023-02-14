@@ -312,10 +312,9 @@ public TreeSet() {
 	}
 	@Override
 	public T get(T pattern) {
-		T res = null;
-		Node<T> node = getNode(pattern);
-		if (node != null && node.obj.equals(pattern)) {
-			res = node.obj;
+		T res = floor(pattern);
+		if (!isEqual(res, pattern)) {
+			res = null;
 		}
 		return res;
 	}
